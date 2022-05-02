@@ -64,26 +64,29 @@ function startBot() {
 
   bot.on('text', (ctx) => {
 
+    let replyMsg: string = ""
+    if (ctx.message === undefined) {
+      replyMsg = "Cannot identify the user"
+      ctx.reply(replyMsg)
+      logger.info(`Context info is empty, message: ${replyMsg}`)
+      return
+    }
 
-    parser(ctx.message.text)
+    const httpIndex: number = ctx.message.text.indexOf('http')
+    const linkMsg: string = ctx.message.text.substr(httpIndex)
+    logger.info("Message is " + linkMsg)
+
+    var parsedText: URL
+    try {
+      parsedText = new URL(linkMsg)
+    } catch (err: any) {
+      ctx.reply("Invalid URL was passed, cannot save the link")
+      logger.error(`message - ${err.message}, stack trace - ${err.stack}`);
+      return
+    }
+
+    parser(linkMsg)
       .then((result: Metadata) => {
-
-        let replyMsg: string = ""
-        if (ctx.message === undefined) {
-          replyMsg = "Cannot identify the user"
-          ctx.reply(replyMsg)
-          logger.info(`Context info is empty, message: ${replyMsg}`)
-          return
-        }
-
-        var parsedText: URL
-        try {
-          parsedText = new URL(ctx.message.text)
-        } catch (err: any) {
-          ctx.reply("Invalid URL was passed, cannot save the link")
-          logger.error(`message - ${err.message}, stack trace - ${err.stack}`);
-          return
-        }
 
         let siteName: string = toTitleCase(parsedText.host);
         if (result.og.site_name !== undefined) {
@@ -95,7 +98,7 @@ function startBot() {
 
         noto.getLastId(ctx.message.from.id)
           .then((num: number) => {
-            noto.addItem(num + 1, title, ctx.message.text, typeOfDoc, ctx.message.from.id)
+            noto.addItem(num + 1, title, linkMsg, typeOfDoc, ctx.message.from.id)
               .then(() => {
                 ctx.reply("Saved Succesfully")
               })

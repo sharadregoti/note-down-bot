@@ -2,7 +2,7 @@ import { Pool, PoolConfig, QueryConfig, QueryResult } from "pg";
 
 const cfg: PoolConfig = {
     user: 'postgres',
-    host: (process.env.NODE_ENV || "development" == 'development') ? 'localhost' : 'postgres',
+    host: (process.env.NODE_ENV === 'development') ? 'localhost' : 'postgres',
     database: 'postgres',
     password: 'mysecretpassword',
     port: 5432,
