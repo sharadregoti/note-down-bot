@@ -3,8 +3,9 @@ set schema 'bot';
 
 create table if not exists telegram_users (
     id serial,
-    telegram_id int,
+    telegram_id bigint,
     name text,
+    is_registration_complete boolean default 'f',
     primary key (id),
     unique (telegram_id)
 );
@@ -16,7 +17,7 @@ create table if not exists websites  (
     email_id varchar(100),
     access_token text,
     meta json default '{}',
-    telegram_id int,
+    telegram_id bigint,
     primary key (id),
     FOREIGN KEY(telegram_id) REFERENCES telegram_users(telegram_id) ON DELETE CASCADE
 );

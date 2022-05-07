@@ -11,7 +11,7 @@ async function redirectCallback(req: Request, res: Response, next: NextFunction)
     const err: any = req.query.error
     if (err) {
         logger.error(`Notion oauth redirect returned with error state ${err}`)
-        res.json({ "message": "Cannot register with notion" })
+        res.render('message', { titileMsg: 'Failed', success: false, message: 'Cannot register with notion' });
         return
     }
 
@@ -42,20 +42,26 @@ async function redirectCallback(req: Request, res: Response, next: NextFunction)
         const result = await db.getUserByEmail(email)
         if (result.length > 0) {
             logger.info(`User is already registered with email ${email}`)
-            res.json({ "message": "User already exits" })
+            res.render('message', { titileMsg: 'Failed', success: false, message: 'User already exits' });
             return
         }
 
-        const dbID:string = await noto.getCloneDatabaseId(accessToken)
+        logger.info("Access token is " + accessToken)
+        const dbID: string = await noto.getCloneDatabaseId(accessToken)
+        if (dbID === "") {
+            throw new Error("Cannot find the required page, Did you dublicate the required notion paged?");
+        }
+
         const userId = await db.addWebUser(dbID, username, email, 'notion', accessToken, state)
         logger.info(`New notion user is registered with id ${userId}`)
-        res.json({ "message": "Successfully registered"})
-        bot.sendSuccessResponse()
+
+        res.render('message', { titileMsg: 'Success', success: true, message: 'You can now start sending links to telegram bot' });
+        bot.sendSuccessResponse(state)
         return
     } catch (err: any) {
         logger.error(`message - ${err.message}, stack trace - ${err.stack}`);
         res.status(409)
-        res.json({ "error": err.message })
+        res.render('message', { titileMsg: 'Failed', success: false, message: err.message });
     }
 }
 

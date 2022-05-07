@@ -89,19 +89,18 @@ const addWebUser = async (dbID: string, name: string, emailId: string, webName: 
     const client = await pool.connect()
 
     try {
-        const qc: QueryConfig = {
-            text: 'insert into bot.websites(web_name, user_name, email_id, access_token, telegram_id, meta) VALUES ($1, $2, $3, $4, $5, $6)',
-            values: [webName, name, emailId, accessToken, telegramId, JSON.stringify({ "databaseId": dbID })]
-        }
-
-        const res = await client.query(qc)
-        return res.rows
-    } catch (e) {
+        await client.query('BEGIN')
+        const queryText = 'insert into bot.websites(web_name, user_name, email_id, access_token, telegram_id, meta) VALUES ($1, $2, $3, $4, $5, $6)'
+        const res = await client.query(queryText, [webName, name, emailId, accessToken, telegramId, JSON.stringify({ "databaseId": dbID })])
+        const insertPhotoText = 'update bot.telegram_users set is_registration_complete = $1 where telegram_id = $2'
+        await client.query(insertPhotoText, [true, telegramId])
+        await client.query('COMMIT')
+      } catch (e) {
+        await client.query('ROLLBACK')
         throw e
-    } finally {
+      } finally {
         client.release()
-    }
-
+      }
 }
 
 export default {

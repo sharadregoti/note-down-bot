@@ -8,6 +8,9 @@ import morganMiddleware from './src/middlewares/morgan';
 const app = express();
 const port:number = 3000;
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
 app.use(morganMiddleware)
 app.use(bodyParser.json());
 app.use(

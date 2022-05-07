@@ -8,13 +8,16 @@ async function getCloneDatabaseId(accessToken: string): Promise<string> {
     try {
         const notion = new Client({ auth: accessToken })
         const response = await notion.search({
-            query: "Bookmarks",
+            // query: "Bookmarks",
             filter: {
                 property: "object",
                 value: "database"
             }
         })
 
+        logger.info("Length of result is" + response.results.length)
+
+        // Should throw error
         for (const obj of response.results) {
             const myres: any = obj
             if (myres.properties.Sr === undefined) {

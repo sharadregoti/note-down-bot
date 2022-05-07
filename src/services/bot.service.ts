@@ -16,12 +16,16 @@ function toTitleCase(str: string) {
 }
 const bot = new Telegraf<Context>(tcfg.security_code)
 
-const sendSuccessResponse = async () => {
-  bot.telegram.sendMessage('1727275983', 'Connected Successfully 🥳')
+const sendSuccessResponse = async (telegramID: number) => {
+  bot.telegram.sendMessage(telegramID, 'Connected Successfully 🥳')
 }
 
 function startBot() {
   logger.info("Starting telegram bot...")
+
+  bot.command('start', (ctx: Context) => {
+    ctx.replyWithMarkdownV2('Use the */register* command to start the registration process')
+  })
 
   bot.command('register', (ctx: Context) => {
 
@@ -42,7 +46,7 @@ function startBot() {
 
     // TODO: use website table
     db.getTelegramUser(ctx.message.from.id).then(val => {
-      if (val.length > 0) {
+      if (val.length > 0 && val[0].is_registration_complete) {
         replyMsg = "Already registered with us"
         ctx.reply(replyMsg)
         logger.info(`Telegram user with id ${ctx.message?.from.id}, message: ${replyMsg}`)
@@ -55,9 +59,10 @@ function startBot() {
         })
         .catch((e) => {
           ctx.reply("Cannot initiate registration")
+          return
         })
 
-      ctx.replyWithMarkdownV2('*Follow this link to connect your notion account*')
+      ctx.replyWithMarkdownV2('*👇 Follow this link to connect your notion account*')
       ctx.reply(myURL.toString());
     })
   })
@@ -72,9 +77,21 @@ function startBot() {
       return
     }
 
+    if (ctx.message.text.toLowerCase() === "hi") {
+      ctx.replyWithMarkdownV2('Use the */register* command to start the registration process')
+      return
+    }
+
+    if (ctx.message.text.toLowerCase() === "start") {
+      return
+    }
+
     const httpIndex: number = ctx.message.text.indexOf('http')
-    const linkMsg: string = ctx.message.text.substr(httpIndex)
-    logger.info("Message is " + linkMsg)
+    let linkMsg: string = ctx.message.text;
+    if (httpIndex) {
+      linkMsg = ctx.message.text.substr(httpIndex)
+    }
+    logger.info(`Message from ${ctx.message.from.id} is ${linkMsg}`)
 
     var parsedText: URL
     try {
