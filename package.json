@@ -29,8 +29,10 @@
     "ejs": "^3.1.7",
     "express": "^4.17.3",
     "html-metadata-parser": "^2.0.4",
+    "https-proxy-agent": "^5.0.1",
     "morgan": "^1.10.0",
     "pg": "^8.7.3",
+    "socks-proxy-agent": "^6.2.0",
     "telegraf": "^4.7.0",
     "winston": "^3.7.2"
   }

@@ -18,7 +18,9 @@ create table if not exists websites  (
     access_token text,
     meta json default '{}',
     telegram_id bigint,
+    messages_stored bigint default 0,
     primary key (id),
+    unique (telegram_id),
     FOREIGN KEY(telegram_id) REFERENCES telegram_users(telegram_id) ON DELETE CASCADE
 );
 

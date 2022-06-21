@@ -28,6 +28,24 @@ const getTelegramUser = async (telegramId: number | undefined) => {
     }
 }
 
+const incrementUserMsg = async (telegramId: number | undefined) => {
+    const client = await pool.connect()
+
+    try {
+        const qc: QueryConfig = {
+            text: 'update bot.websites set messages_stored = messages_stored + 1 where telegram_id = $1 RETURNING id',
+            values: [telegramId]
+        }
+
+        const res = await client.query(qc)
+        return res.rows
+    } catch (e) {
+        throw e
+    } finally {
+        client.release()
+    }
+}
+
 
 const addTelegramUser = async (telegramId: number | undefined, name: string | undefined) => {
     const client = await pool.connect()
@@ -104,6 +122,7 @@ const addWebUser = async (dbID: string, name: string, emailId: string, webName: 
 }
 
 export default {
+    incrementUserMsg,
     addTelegramUser,
     getTelegramUser,
     getAccessToken,

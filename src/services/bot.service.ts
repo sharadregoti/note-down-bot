@@ -1,4 +1,6 @@
 import parser, { Metadata } from 'html-metadata-parser';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 import { Context, Telegraf } from 'telegraf';
 import ncfg from '../configs/notion.config';
 import tcfg from '../configs/telegram.config';
@@ -15,6 +17,9 @@ function toTitleCase(str: string) {
   );
 }
 const bot = new Telegraf<Context>(tcfg.security_code)
+// telegram: {
+//   agent: new HttpsProxyAgent({ host: "sharadregoti.com", port: 443, secureProxy: true })
+// }
 
 const sendSuccessResponse = async (telegramID: number) => {
   bot.telegram.sendMessage(telegramID, 'Connected Successfully 🥳')
@@ -123,12 +128,17 @@ function startBot() {
                 logger.error(`message - ${err.message}, stack trace - ${err.stack}`);
                 ctx.reply("Failed to save")
               })
+            db.incrementUserMsg(ctx.message.from.id)
+              .catch((err: any) => {
+                logger.error(`Failed to update stored msg count, message - ${err.message}, stack trace - ${err.stack}`);
+              })
           })
           .catch((err: any) => {
             logger.error(`message - ${err.message}, stack trace - ${err.stack}`);
             ctx.reply("Failed to save")
           })
       })
+
   })
 
   bot.launch()

@@ -1,0 +1,7 @@
+sharadregoti.com:443 {
+	log {
+		output file /home/ec2-user/task-automater-access.log
+	}
+	reverse_proxy http://localhost:3000
+	reverse_proxy /grafana http://localhost:3001
+}

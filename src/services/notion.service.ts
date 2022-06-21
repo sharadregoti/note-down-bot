@@ -32,6 +32,9 @@ async function getCloneDatabaseId(accessToken: string): Promise<string> {
             if (myres.properties.Tags === undefined) {
                 continue
             }
+            if (myres.properties["Mark As Read"] === undefined) {
+                continue
+            }
             return obj.id
         }
     } catch (error: any) {
