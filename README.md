@@ -14,4 +14,5 @@ With the help of the telegram bot, I have created a Notion integration to import
 Simply share any URL to the telegram bot & it will be imported into your notion page.
 
 Use the steps specified in the below link 👇, To set it up for your notion workspace.
-https://lnkd.in/d8D4tgYQ
+
+https://neon-pruner-5a1.notion.site/Telegram-To-Notion-Bookmarks-Importer-9f12315a0bd84a4d89a5124bfab24400
