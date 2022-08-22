@@ -17,4 +17,5 @@ Use the steps specified in the below link 👇, To set it up for your notion wor
 
 https://neon-pruner-5a1.notion.site/Telegram-To-Notion-Bookmarks-Importer-9f12315a0bd84a4d89a5124bfab24400
 
-https://drive.google.com/file/d/1v7fstOiHMzLzIbdaKIOKTvOulGV3VTkU/view
+[![Watch the video]()](https://drive.google.com/file/d/1v7fstOiHMzLzIbdaKIOKTvOulGV3VTkU/view)
+
