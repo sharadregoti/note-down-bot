@@ -1,53 +1,20 @@
 # composse.yml
 version: "3"
 services:
-  prometheus:
-    image: prom/prometheus
-    ports:
-    - 9090:9090
-    volumes:
-    - ./prometheus.yaml:/etc/prometheus/prometheus.yml
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-
-  grafana:
-    image: grafana/grafana
-    ports:
-    - 3001:3000
-    depends_on: [prometheus]
-
-  ###############################################################
-  #            Agent to collect runtime metrics                 #
-  ###############################################################
-  cadvisor:
-    image: google/cadvisor:latest
-    volumes:
-    - /:/rootfs:ro
-    - /var/run:/var/run:rw
-    - /sys:/sys:ro
-    - /var/lib/docker/:/var/lib/docker:ro
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-
   task-automater:
-    image: sharadregoti/telegram:0.1.0
+    image: sharadregoti/note-down-bot:v0.1.0
     restart: always
-    depends_on:
-      - postgres
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: prod
-
-  postgres:
-    image: postgres:latest
-    volumes:
-      - /home/ec2-user/postgres:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: mysecretpassword
+      DB_USER: postgres
+      DB_HOST: 1234
+      DB_NAME: 1234
+      DB_PASSWORD: 1234
+      DB_PORT: 5432
+      TELEGRAM_SECURITY_CODE: 1234
+      NOTION_CLIENT_ID: 1234
+      NOTION_CLIENT_SECRET: 1234
+      NOTION_REDIRECT_URL: http://localhost:3000/oauth
+      WEBHOOKDOMAIN: 1234

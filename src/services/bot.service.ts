@@ -1,6 +1,4 @@
 import parser, { Metadata } from 'html-metadata-parser';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import { SocksProxyAgent } from 'socks-proxy-agent';
 import { Context, Telegraf } from 'telegraf';
 import ncfg from '../configs/notion.config';
 import tcfg from '../configs/telegram.config';
@@ -17,9 +15,6 @@ function toTitleCase(str: string) {
   );
 }
 const bot = new Telegraf<Context>(tcfg.security_code)
-// telegram: {
-//   agent: new HttpsProxyAgent({ host: "sharadregoti.com", port: 443, secureProxy: true })
-// }
 
 const sendSuccessResponse = async (telegramID: number) => {
   bot.telegram.sendMessage(telegramID, 'Connected Successfully 🥳')
@@ -30,6 +25,42 @@ function startBot() {
 
   bot.command('start', (ctx: Context) => {
     ctx.replyWithMarkdownV2('Use the */register* command to start the registration process')
+  })
+
+  bot.command('deregister', (ctx: Context) => {
+
+    let replyMsg: string = ""
+    if (ctx.message === undefined) {
+      replyMsg = "Cannot identify the user"
+      ctx.reply(replyMsg)
+      logger.info(`Context info is empty, message: ${replyMsg}`)
+      return
+    }
+
+    // TODO: use website table
+    db.getTelegramUser(ctx.message.from.id).then(val => {
+      if (val.length > 0 && val[0].is_registration_complete) {
+        // Delete user
+
+        db.removeUser(ctx.message?.from.id)
+          .then(() => {
+            ctx.reply("Sucessfully removed")
+            return
+          })
+          .catch((e) => {
+            ctx.reply("Failed to deregister")
+            return
+          })
+
+
+        replyMsg = "Already registered with us"
+        ctx.reply(replyMsg)
+        logger.info(`Telegram user with id ${ctx.message?.from.id}, message: ${replyMsg}`)
+        return
+      }
+
+      ctx.reply("Not registered, use /register command to register")
+    })
   })
 
   bot.command('register', (ctx: Context) => {
@@ -141,11 +172,11 @@ function startBot() {
 
   })
 
-  bot.launch()
   logger.info("Telegram bot started")
 }
 
 export default {
+  bot,
   startBot,
   sendSuccessResponse
 }

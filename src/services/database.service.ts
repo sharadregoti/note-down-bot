@@ -10,6 +10,24 @@ const cfg: PoolConfig = {
 
 const pool: Pool = new Pool(cfg);
 
+const removeUser = async (telegramId: number | undefined) => {
+    const client = await pool.connect()
+
+    try {
+        await client.query('BEGIN')
+        const deleteUsers = `delete from bot.telegram_users where telegram_id = $1`
+        const res = await client.query(deleteUsers, [telegramId])
+        const deleteWebsites = 'delete from bot.telegram_users where telegram_id = $1'
+        await client.query(deleteWebsites, [telegramId])
+        await client.query('COMMIT')
+      } catch (e) {
+        await client.query('ROLLBACK')
+        throw e
+      } finally {
+        client.release()
+      }
+}
+
 const getTelegramUser = async (telegramId: number | undefined) => {
     const client = await pool.connect()
 
@@ -127,5 +145,6 @@ export default {
     getTelegramUser,
     getAccessToken,
     addWebUser,
-    getUserByEmail
+    getUserByEmail,
+    removeUser
 }

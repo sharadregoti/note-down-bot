@@ -2,7 +2,7 @@
   "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "es2017",
     "rootDir": "./",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true, 
